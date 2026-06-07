@@ -2,46 +2,98 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title><%= title %> | Internet Solutions</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <header>
-        <nav>
-            <a href="/portal" class="logo">Internet Solutions</a>
-            <button class="nav-toggle" id="nav-toggle">
-                <i class="fas fa-bars"></i>
-            </button>
-            <ul id="nav-menu">
-                <li><a href="/portal">Home</a></li>
-                <li><a href="/register">Register</a></li>
-                <li><a href="/dashboard">Dashboard</a></li>
+    <div class="app-wrapper">
+        <!-- Sidebar Navigation (Desktop & Tablet) -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-wifi fa-2x" style="color: var(--primary)"></i>
+                <span class="sidebar-logo">Solutions</span>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item <%= title === 'Welcome to Our Captive Portal' ? 'active' : '' %>">
+                    <a href="/portal"><i class="fas fa-home"></i> <span>Home</span></a>
+                </li>
+                <li class="sidebar-item <%= title === 'User Login' ? 'active' : '' %>">
+                    <a href="/login"><i class="fas fa-sign-in-alt"></i> <span>Login</span></a>
+                </li>
+                <li class="sidebar-item <%= title === 'Register' ? 'active' : '' %>">
+                    <a href="/register"><i class="fas fa-user-plus"></i> <span>Register</span></a>
+                </li>
+                <li class="sidebar-item <%= title === 'User Dashboard' ? 'active' : '' %>">
+                    <a href="/dashboard"><i class="fas fa-chart-line"></i> <span>Dashboard</span></a>
+                </li>
+                <li class="sidebar-item <%= title === 'Account Settings' ? 'active' : '' %>">
+                    <a href="/settings"><i class="fas fa-cog"></i> <span>Settings</span></a>
+                </li>
+                <% if (locals.session && locals.session.role === 'admin') { %>
+                <li class="sidebar-item <%= title.includes('Admin') ? 'active' : '' %>">
+                    <a href="/admin"><i class="fas fa-user-shield"></i> <span>Admin</span></a>
+                </li>
+                <% } %>
+            </ul>
+            <div class="sidebar-footer">
+                <% if (locals.session && locals.session.userId) { %>
+                <a href="/logout" class="sidebar-item"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+                <% } %>
+            </div>
+        </aside>
+
+        <div class="main-content">
+            <!-- Mobile Top Bar -->
+            <header class="mobile-top-bar">
+                <div class="sidebar-header" style="padding: 0">
+                    <i class="fas fa-wifi" style="color: var(--primary)"></i>
+                    <span class="sidebar-logo" style="display: block; font-size: 1.1rem">Solutions</span>
+                </div>
+                <% if (locals.session && locals.session.userId) { %>
+                    <a href="/logout" style="color: var(--text-muted)"><i class="fas fa-sign-out-alt"></i></a>
+                <% } else { %>
+                    <a href="/login" style="color: var(--primary); font-weight: 700; font-size: 0.9rem">LOGIN</a>
+                <% } %>
+            </header>
+
+            <main class="container">
+                <% if (locals.error) { %>
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i> <%= error %>
+                    </div>
+                <% } %>
+                <% if (locals.notice) { %>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> <%= notice %>
+                    </div>
+                <% } %>
+
+                <%- body %>
+            </main>
+        </div>
+
+        <!-- Bottom Navigation (Mobile Only) -->
+        <nav class="bottom-nav">
+            <ul class="bottom-nav-menu">
+                <li class="bottom-nav-item <%= title === 'Welcome to Our Captive Portal' ? 'active' : '' %>">
+                    <a href="/portal"><i class="fas fa-home"></i><span>Home</span></a>
+                </li>
+                <li class="bottom-nav-item <%= title === 'User Login' || title === 'Register' ? 'active' : '' %>">
+                    <a href="/login"><i class="fas fa-user"></i><span>Account</span></a>
+                </li>
+                <li class="bottom-nav-item <%= title === 'User Dashboard' ? 'active' : '' %>">
+                    <a href="/dashboard"><i class="fas fa-chart-line"></i><span>Stats</span></a>
+                </li>
+                <li class="bottom-nav-item <%= title === 'Account Settings' ? 'active' : '' %>">
+                    <a href="/settings"><i class="fas fa-cog"></i><span>Settings</span></a>
+                </li>
             </ul>
         </nav>
-    </header>
+    </div>
 
     <input type="hidden" id="paystack-public-key" value="<%= locals.PAYSTACK_PUBLIC_KEY %>">
-
-    <main class="container">
-        <% if (locals.error) { %>
-            <div class="alert alert-danger">
-                <i class="fas fa-exclamation-triangle"></i> <%= error %>
-            </div>
-        <% } %>
-        <% if (locals.notice) { %>
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle"></i> <%= notice %>
-            </div>
-        <% } %>
-
-        <%- body %>
-    </main>
-
-    <footer>
-        <p>&copy; 2026 Internet Solutions. All rights reserved.</p>
-    </footer>
 
     <script src="https://js.paystack.co/v1/inline.js"></script>
     <script src="/js/main.js"></script>

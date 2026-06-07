@@ -60,6 +60,7 @@ app.use(express.urlencoded({ extended: true }));
 // Global variables for views
 app.use((req, res, next) => {
   res.locals.PAYSTACK_PUBLIC_KEY = process.env.PAYSTACK_PUBLIC_KEY || process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
+  res.locals.session = req.session;
   next();
 });
 
