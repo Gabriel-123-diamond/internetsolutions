@@ -1,0 +1,59 @@
+<section class="portal-hero">
+    <h1>Welcome to Internet Solutions</h1>
+    <p>Please enter your voucher code to start browsing.</p>
+</section>
+
+<section class="login-section">
+    <div class="card">
+        <h2><i class="fas fa-key"></i> Voucher Login</h2>
+        <form action="/login" method="POST">
+            <div class="form-group">
+                <label for="voucherCode">Voucher Code</label>
+                <input type="text" id="voucherCode" name="voucherCode" placeholder="Enter 6-character code" maxlength="6" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Connect Now</button>
+        </form>
+    </div>
+</section>
+
+<section class="plans-section">
+    <h2><i class="fas fa-wifi"></i> Purchase a Plan</h2>
+    <p>Don't have a voucher? Choose a plan below.</p>
+    
+    <div class="plans-grid" id="plansGrid">
+        <!-- Plans will be loaded here dynamically or via EJS -->
+        <div class="plan-card">
+            <h3>Basic Plan</h3>
+            <div class="price">₦500</div>
+            <ul>
+                <li>1 Hour Access</li>
+                <li>Unlimited Data</li>
+            </ul>
+            <button class="btn btn-success buy-plan" data-plan-id="1">Buy Now</button>
+        </div>
+        <div class="plan-card">
+            <h3>Daily Plan</h3>
+            <div class="price">₦2,000</div>
+            <ul>
+                <li>24 Hours Access</li>
+                <li>5GB Data Limit</li>
+            </ul>
+            <button class="btn btn-success buy-plan" data-plan-id="2">Buy Now</button>
+        </div>
+    </div>
+</section>
+
+<div id="paymentModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Complete Purchase</h2>
+        <form id="paymentForm">
+            <input type="hidden" id="selectedPlanId">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="email@example.com" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Pay with Paystack</button>
+        </form>
+    </div>
+</div>

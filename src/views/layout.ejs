@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> | Internet Solutions</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">Internet Solutions</div>
+            <ul>
+                <li><a href="/portal">Home</a></li>
+                <li><a href="/register">Register</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <% if (locals.error) { %>
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i> <%= error %>
+            </div>
+        <% } %>
+        <% if (locals.notice) { %>
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> <%= notice %>
+            </div>
+        <% } %>
+
+        <%- body %>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Internet Solutions. All rights reserved.</p>
+    </footer>
+
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script src="/js/main.js"></script>
+</body>
+</html>

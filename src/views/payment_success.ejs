@@ -1,0 +1,24 @@
+<div class="card">
+    <div class="alert alert-info" style="text-align: center;">
+        <i class="fas fa-check-circle fa-3x" style="color: var(--success); margin-bottom: 1rem;"></i>
+        <h2>Payment Successful!</h2>
+    </div>
+    
+    <div class="voucher-box" style="background: #f1f5f9; padding: 2rem; border-radius: var(--radius); border: 2px dashed var(--primary); margin: 2rem 0;">
+        <p>Your Voucher Code:</p>
+        <h1 style="font-size: 3rem; letter-spacing: 5px; color: var(--primary);"><%= voucher.username %></h1>
+        <p>Password/Token:</p>
+        <code style="word-break: break-all;"><%= voucher.password %></code>
+    </div>
+
+    <div style="text-align: left; margin-bottom: 2rem;">
+        <h3>Voucher Details:</h3>
+        <ul>
+            <li><strong>Status:</strong> <span class="badge badge-unused">Unused</span></li>
+            <li><strong>Duration:</strong> <%= voucher.total_duration_allowed > 0 ? (voucher.total_duration_allowed / 3600) + ' Hours' : 'Unlimited' %></li>
+            <li><strong>Data:</strong> <%= voucher.total_data_allowed > 0 ? (voucher.total_data_allowed / (1024*1024*1024)) + ' GB' : 'Unlimited' %></li>
+        </ul>
+    </div>
+
+    <a href="/portal" class="btn btn-primary btn-block">Go to Login Page</a>
+</div>

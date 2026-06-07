@@ -1,0 +1,79 @@
+You are an expert full-stack engineer specializing in Network Infrastructure, Captive Portals, and Node.js backend architecture. 
+
+I need you to build a complete, production-ready Captive Portal system using **Node.js, Express, PostgreSQL (Supabase), and EJS**. This system will be split-deployed across **Vercel** (the client-facing login/payment portal) and **Render** (the persistent management backend that handles long-running SSH tunnels and remote router commands). The network gateway access controller running locally on the router is **CoovaChilli**.
+
+Please strictly follow the exact architectural patterns, directory structures, and programmatic techniques described below.
+
+---
+
+## 1. Core Technical Architecture & Split-Deployment Strategy
+
+### Environment Separation
+* **Vercel (Primary Portal):** Acts as a serverless landing page. It handles database reads for plans, processes session state logic, and initiates payment gateways. Vercel runs in a serverless environment and *cannot* maintain persistent TCP/SSH connections.
+* **Render (Persistent Management Backend):** Runs a dedicated, non-serverless background process. It holds a persistent SSH connection/tunnel to the on-premise OpenWrt router to handle manual administrative actions (like forcefully pausing or disconnecting an active wireless session).
+
+### Database Schema (PostgreSQL/Supabase)
+Your database must have the following schema definitions, column constraints, and exact types:
+1.  **`users` Table:** `id (SERIAL PK)`, `email (VARCHAR UNIQUE)`, `password (VARCHAR)`, `created_at (TIMESTAMP DEFAULT CURRENT)`.
+2.  **`plans` Table:** `id (SERIAL PK)`, `name (VARCHAR)`, `price (DECIMAL(10,2))`, `duration_seconds (INTEGER)` (0 means unlimited time), `data_bytes (BIGINT)` (0 means unlimited data).
+3.  **`vouchers` Table:** * `id (SERIAL PK)`
+    * `user_id (INTEGER, FK to users.id, NULLable for guest checkouts)`
+    * `username (VARCHAR(6) UNIQUE, NOT NULL)` -> Exactly a 6-character clean alphanumeric string code (Avoid confusing chars like I, O, 0, 1).
+    * `password (VARCHAR, NOT NULL)` -> Secure base64url random string token.
+    * `plan_id (INTEGER, FK to plans.id)`
+    * `total_duration_allowed (INTEGER)`
+    * `accumulated_time_used (INTEGER, DEFAULT 0)`
+    * `total_data_allowed (BIGINT)`
+    * `accumulated_data_used (BIGINT, DEFAULT 0)`
+    * `status (ENUM)` -> Must accept: `'unused'`, `'active'`, `'paused'`, `'expired'`. Default is `'unused'`.
+    * `last_mac_address (VARCHAR(17), NULLable)`
+    * `payment_reference (VARCHAR UNIQUE, NULLable)`
+    * A partial unique index on `payment_reference` where it is NOT NULL to avoid race conditions during webhooks.
+
+---
+
+## 2. Source Code Implementation Details (`src/`)
+
+### Backend Framework & Middlewares (`src/app.js`)
+* Implement strict security policies via `helmet` config (specifically configuring custom Content Security Policies for fonts/scripts from `cdnjs.cloudflare.com` and payment endpoints from `https://api.paystack.co`).
+* Enable `cors` explicitly mapping to configuration values from a `CORS_ORIGIN` comma-separated list.
+* Implement `express-rate-limit` restrictions applied directly to sensitive pathways: `/login`, `/register`, and `/api/payment/initiate`.
+* Configure `express.json` with a dedicated buffer extraction utility (`verify: (req, res, buf) => { req.rawBody = buf; }`) to allow timing-safe cryptographic signature validation on incoming raw payment vendor webhooks.
+* Setup `express-session` backed by a secure browser cookie lifecycle configuration (`httpOnly: true`, `sameSite: 'lax'`, `maxAge: 24h`, and dynamically enforcing `secure: true` if `NODE_ENV === 'production'`).
+* Export the application engine directly using `module.exports = app` to natively satisfy Vercel serverless function wrappers, while wrapping standard listener attachments inside a conditional blockade: `if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) { app.listen(PORT); }`.
+
+### Routes Architecture
+
+#### A. Captive Portal Routing (`src/routes/portal.js`)
+* **CoovaChilli Parameter Capture:** The landing route `/portal` must read and extract inbound query string parameters issued directly by the CoovaChilli redirection lifecycle (`mac`, `ip`, `gw_address`, `gw_port`) and save them safely to the user's encrypted cookie session.
+* **Voucher Verification & Redirection Loop:** * When a 6-character voucher string is submitted via a POST request to `/login`, check the database record. If limits are hit (`timeRemaining <= 0` or `dataRemaining <= 0`), forcefully cycle the voucher state to `'expired'` and deny entry.
+    * On a valid session validation match, update the voucher record database field to track `last_mac_address` (read out of the session values) and flip the tracking state enum to `'active'`.
+    * Finally, issue a deterministic 302 browser redirect directly back onto the local CoovaChilli gateway control engine using the dynamically resolved parameter format: `http://${gw_address}:${gw_port}/www/login.chi?username=${username}&password=${password}`.
+
+#### B. Payment Integration Engine (`src/routes/payment.js`)
+* **Initiation:** Integrate Paystack transaction handling. Target amounts must be computed natively in minor currencies (Kobo) by multiplying database plan pricing by 100 (`Math.round(plan.price * 100)`). Pass custom `metadata` payloads carrying `planId`, `userId`, and `mac` data arrays inside the initial transaction request.
+* **Verification & Webhook Fallback:** Implement a parallel resilience loop. The voucher record insertion step must execute identically inside both the standard UI frontend `/success` fallback route and the secure async backend `/webhook` endpoint.
+* **Idempotency & Race Handling:** Structure the logic to cleanly prevent duplicate voucher records if the webhook fires simultaneously with the success redirect. Wrap the 6-character alphanumeric code engine and token generator inside an optimistic concurrency loop (up to 5 attempts) capturing database constraint errors (`err.code === '23505'`). If a unique index violation occurs, gracefully verify if the voucher was already initialized via the competing code execution branch.
+
+#### C. Active Session Manipulation (`src/routes/session.js`)
+* **Remote Session Pausing via SSH:** Implement an endpoint at POST `/pause`. This endpoint handles user requests to disconnect and preserve their remaining allocation balance.
+* Using the `ssh2` Client library, establish an authenticated channel pointing directly towards the environment variable configuration `ROUTER_SSH_HOST` (which will target the localhost reverse proxy loopback interface mapped across your cloud network architecture).
+* Upon establishing a valid SSH runtime session shell command execution path, pass down a clean, sanitized system control statement to log out the matching user interface hardware node directly on the router: `chilli_query logout ${mac}`.
+* Once the execution stream safely terminates, alter the voucher data state row inside your PostgreSQL architecture, setting the current status enum to `'paused'`.
+
+---
+
+## 3. UI/UX Layer Framework (EJS Views & Styling)
+
+* Utilize EJS component layouts injected natively through a centralized wrapper (`layout.ejs`) utilizing custom client navigation blocks, system metrics tracking tags, and standard dynamic notification blocks (`error`, `notice`).
+* The UI must maintain a clean grid framework (`style.css`) using functional modern CSS variables (`--primary`, `--success`, `--danger`, etc.), responsive flexbox components, embedded FontAwesome icon alignments, and interactive badge classes reflecting active voucher tracking status (`badge-active`, `badge-paused`, `badge-unused`, `badge-expired`).
+* **Frontend Scripting Component (`src/public/js/main.js`):** Implement password eye toggle event behaviors across registration and portal panels. Intercept plan purchase forms to open modern popup windows for secure Paystack transactions (`window.open('', 'paystackCheckout')`). Hook into runtime `window.addEventListener('message')` listeners to trap security events matching `PAYMENT_SUCCESS` origins to smoothly redirect the underlying browser layout frame straight onto user tracking dashboards without breaking shell states.
+
+Please generate the absolute complete, production-ready codebase structure following these rules perfectly. Make sure the backend code is robust, highly secure, and fully matches these constraints.
+
+
+
+
+
+
+https://github.com/Gabriel-123-diamond/internetsolutions
