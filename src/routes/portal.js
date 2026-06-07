@@ -158,10 +158,43 @@ router.get('/dashboard', async (req, res) => {
       'SELECT v.*, p.name as plan_name FROM vouchers v JOIN plans p ON v.plan_id = p.id WHERE v.user_id = $1 ORDER BY v.created_at DESC',
       [req.session.userId]
     );
-    res.render('dashboard', { title: 'User Dashboard', vouchers: result.rows });
+    res.render('dashboard', { title: 'User Dashboard', vouchers: result.rows, error: req.query.error, notice: req.query.notice });
   } catch (err) {
     console.error(err);
     res.render('error', { title: 'Error', error: 'Failed to load dashboard' });
+  }
+});
+
+// User Settings
+router.get('/settings', (req, res) => {
+  if (!req.session.userId) return res.redirect('/login');
+  res.render('settings', { title: 'Account Settings', error: req.query.error, notice: req.query.notice });
+});
+
+router.post('/settings/change-password', async (req, res) => {
+  if (!req.session.userId) return res.redirect('/login');
+  const { currentPassword, newPassword, confirmPassword } = req.body;
+
+  if (newPassword !== confirmPassword) {
+    return res.redirect('/settings?error=New passwords do not match');
+  }
+
+  try {
+    const result = await db.query('SELECT password FROM users WHERE id = $1', [req.session.userId]);
+    const user = result.rows[0];
+    
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.redirect('/settings?error=Current password is incorrect');
+    }
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+    await db.query('UPDATE users SET password = $1 WHERE id = $2', [hashed, req.session.userId]);
+    
+    res.redirect('/settings?notice=Password updated successfully');
+  } catch (err) {
+    console.error(err);
+    res.redirect('/settings?error=Internal server error');
   }
 });
 

@@ -1,8 +1,25 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
+const bcrypt = require('bcryptjs');
 const { isAdmin } = require('../middleware/auth');
 
+// Password-only login for Admin
+router.get('/login', (req, res) => {
+  res.render('admin/login', { title: 'Admin Login', error: req.query.error });
+});
+
+router.post('/login', (req, res) => {
+  const { adminPassword } = req.body;
+  if (adminPassword === process.env.ADMIN_PASSWORD) {
+    req.session.userId = 'admin-master'; // Special ID for master access
+    req.session.role = 'admin';
+    return res.redirect('/admin');
+  }
+  res.redirect('/admin/login?error=Invalid master password');
+});
+
+// Protect all other admin routes
 router.use(isAdmin);
 
 // Admin Dashboard
@@ -28,6 +45,23 @@ router.get('/', async (req, res) => {
     console.error(err);
     res.status(500).send('Error loading admin dashboard');
   }
+});
+
+// Admin Settings
+router.get('/settings', (req, res) => {
+  res.render('admin/settings', { title: 'Admin Settings', error: req.query.error, notice: req.query.notice });
+});
+
+router.post('/change-password', async (req, res) => {
+  const { newPassword, confirmPassword } = req.body;
+  if (newPassword !== confirmPassword) {
+    return res.redirect('/admin/settings?error=Passwords do not match');
+  }
+  
+  // NOTE: Since the admin password is an ENV variable, changing it via UI 
+  // would require updating the ENV on Vercel/Render which is restricted.
+  // We advise the user to update it in their dashboard.
+  res.redirect('/admin/settings?notice=Please update the ADMIN_PASSWORD environment variable in your Vercel/Render dashboard to permanently change it.');
 });
 
 // Plan Management
