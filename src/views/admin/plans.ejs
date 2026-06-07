@@ -1,0 +1,58 @@
+<div class="card">
+    <h2><i class="fas fa-plus-circle"></i> Add New Plan</h2>
+    <form action="/admin/plans/add" method="POST" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem;">
+        <div class="form-group">
+            <label>Plan Name</label>
+            <input type="text" name="name" placeholder="e.g. 2 Hours Data" required>
+        </div>
+        <div class="form-group">
+            <label>Price (₦)</label>
+            <input type="number" name="price" step="0.01" placeholder="500" required>
+        </div>
+        <div class="form-group">
+            <label>Duration (Hours)</label>
+            <input type="number" name="duration_hours" placeholder="2" required>
+        </div>
+        <div class="form-group">
+            <label>Data Limit (GB)</label>
+            <input type="number" name="data_gb" placeholder="1 (0 for unlimited)" required>
+        </div>
+        <div style="grid-column: span 2;">
+            <button type="submit" class="btn btn-success btn-block">Create Plan</button>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    <h2><i class="fas fa-list"></i> Existing Plans</h2>
+    <div style="overflow-x: auto; margin-top: 1.5rem;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="border-bottom: 2px solid var(--border);">
+                    <th style="padding: 1rem;">Name</th>
+                    <th style="padding: 1rem;">Price</th>
+                    <th style="padding: 1rem;">Duration</th>
+                    <th style="padding: 1rem;">Data</th>
+                    <th style="padding: 1rem;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% plans.forEach(plan => { %>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 1rem; font-weight: 600;"><%= plan.name %></td>
+                        <td style="padding: 1rem;">₦<%= parseFloat(plan.price).toLocaleString() %></td>
+                        <td style="padding: 1rem;"><%= (plan.duration_seconds / 3600).toFixed(1) %> hrs</td>
+                        <td style="padding: 1rem;"><%= plan.data_bytes > 0 ? (plan.data_bytes / (1024*1024*1024)).toFixed(1) + ' GB' : 'Unlimited' %></td>
+                        <td style="padding: 1rem;">
+                            <form action="/admin/plans/delete/<%= plan.id %>" method="POST" onsubmit="return confirm('Are you sure? This cannot be undone.');">
+                                <button type="submit" class="btn btn-danger" style="padding: 0.25rem 0.5rem;"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<a href="/admin" class="btn btn-primary"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>

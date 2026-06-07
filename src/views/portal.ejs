@@ -22,25 +22,20 @@
     <p>Don't have a voucher? Choose a plan below.</p>
     
     <div class="plans-grid" id="plansGrid">
-        <!-- Plans will be loaded here dynamically or via EJS -->
-        <div class="plan-card">
-            <h3>Basic Plan</h3>
-            <div class="price">₦500</div>
-            <ul>
-                <li>1 Hour Access</li>
-                <li>Unlimited Data</li>
-            </ul>
-            <button class="btn btn-success buy-plan" data-plan-id="1">Buy Now</button>
-        </div>
-        <div class="plan-card">
-            <h3>Daily Plan</h3>
-            <div class="price">₦2,000</div>
-            <ul>
-                <li>24 Hours Access</li>
-                <li>5GB Data Limit</li>
-            </ul>
-            <button class="btn btn-success buy-plan" data-plan-id="2">Buy Now</button>
-        </div>
+        <% plans.forEach(plan => { %>
+            <div class="plan-card">
+                <h3><%= plan.name %></h3>
+                <div class="price">₦<%= parseFloat(plan.price).toLocaleString() %></div>
+                <ul>
+                    <li><%= plan.duration_seconds > 0 ? (plan.duration_seconds / 3600).toFixed(1) + ' Hours' : 'Unlimited' %> Access</li>
+                    <li><%= plan.data_bytes > 0 ? (plan.data_bytes / (1024*1024*1024)).toFixed(1) + ' GB' : 'Unlimited' %> Data</li>
+                </ul>
+                <button class="btn btn-success buy-plan" data-plan-id="<%= plan.id %>">Buy Now</button>
+            </div>
+        <% }); %>
+        <% if (plans.length === 0) { %>
+            <p>No plans available at the moment.</p>
+        <% } %>
     </div>
 </section>
 

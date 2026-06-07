@@ -85,10 +85,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 const portalRoutes = require('./routes/portal');
 const paymentRoutes = require('./routes/payment');
 const sessionRoutes = require('./routes/session');
+const adminRoutes = require('./routes/admin');
 
 app.use('/', portalRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/session', sessionRoutes);
+app.use('/admin', adminRoutes);
 
 // Error handler
 app.use((err, req, res, next) => {

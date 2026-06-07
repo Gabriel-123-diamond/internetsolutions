@@ -1,0 +1,54 @@
+<div class="admin-stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+    <div class="card" style="margin-bottom: 0;">
+        <i class="fas fa-money-bill-wave fa-2x" style="color: var(--success);"></i>
+        <h3>Total Revenue</h3>
+        <p class="stat-value" style="font-size: 1.5rem; font-weight: 800;">₦<%= parseFloat(stats.totalRevenue).toLocaleString() %></p>
+    </div>
+    <div class="card" style="margin-bottom: 0;">
+        <i class="fas fa-ticket-alt fa-2x" style="color: var(--primary);"></i>
+        <h3>Total Vouchers</h3>
+        <p class="stat-value" style="font-size: 1.5rem; font-weight: 800;"><%= stats.totalVouchers %></p>
+    </div>
+    <div class="card" style="margin-bottom: 0;">
+        <i class="fas fa-users fa-2x" style="color: var(--info);"></i>
+        <h3>Total Users</h3>
+        <p class="stat-value" style="font-size: 1.5rem; font-weight: 800;"><%= stats.totalUsers %></p>
+    </div>
+    <div class="card" style="margin-bottom: 0;">
+        <i class="fas fa-signal fa-2x" style="color: var(--warning);"></i>
+        <h3>Active Sessions</h3>
+        <p class="stat-value" style="font-size: 1.5rem; font-weight: 800;"><%= stats.activeVouchers %></p>
+    </div>
+</div>
+
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2>Recent Sales</h2>
+        <a href="/admin/plans" class="btn btn-primary">Manage Plans</a>
+    </div>
+    
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="border-bottom: 2px solid var(--border);">
+                    <th style="padding: 1rem;">Date</th>
+                    <th style="padding: 1rem;">User/Email</th>
+                    <th style="padding: 1rem;">Plan</th>
+                    <th style="padding: 1rem;">Voucher</th>
+                    <th style="padding: 1rem;">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% recentSales.forEach(sale => { %>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 1rem;"><%= new Date(sale.created_at).toLocaleDateString() %></td>
+                        <td style="padding: 1rem;"><%= sale.user_email || 'Guest' %></td>
+                        <td style="padding: 1rem;"><%= sale.plan_name %></td>
+                        <td style="padding: 1rem;"><code style="background: #f1f5f9; padding: 2px 4px; border-radius: 4px;"><%= sale.username %></code></td>
+                        <td style="padding: 1rem;">₦<%= parseFloat(sale.price).toLocaleString() %></td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+</div>

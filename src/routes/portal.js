@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
 });
 
 // Captive Portal landing page
-router.get('/portal', (req, res) => {
+router.get('/portal', async (req, res) => {
   const { mac, ip, gw_address, gw_port } = req.query;
   
   // Save CoovaChilli parameters to session
@@ -19,12 +19,25 @@ router.get('/portal', (req, res) => {
   if (gw_address) req.session.gw_address = gw_address;
   if (gw_port) req.session.gw_port = gw_port;
   
-  res.render('portal', { 
-    title: 'Welcome to Our Captive Portal',
-    error: req.query.error,
-    notice: req.query.notice,
-    mac: mac || req.session.mac
-  });
+  try {
+    const plansResult = await db.query('SELECT * FROM plans ORDER BY price ASC');
+    res.render('portal', { 
+      title: 'Welcome to Our Captive Portal',
+      error: req.query.error,
+      notice: req.query.notice,
+      mac: mac || req.session.mac,
+      plans: plansResult.rows
+    });
+  } catch (err) {
+    console.error(err);
+    res.render('portal', { 
+      title: 'Welcome to Our Captive Portal',
+      error: 'Failed to load plans',
+      notice: req.query.notice,
+      mac: mac || req.session.mac,
+      plans: []
+    });
+  }
 });
 
 // Voucher Login (Captive Portal Login)
