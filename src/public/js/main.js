@@ -1,4 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Mobile Nav Toggle
+    const navToggle = document.getElementById('nav-toggle');
+    const navMenu = document.getElementById('nav-menu');
+
+    if (navToggle && navMenu) {
+        navToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            const icon = navToggle.querySelector('i');
+            if (navMenu.classList.contains('active')) {
+                icon.classList.replace('fa-bars', 'fa-times');
+            } else {
+                icon.classList.replace('fa-times', 'fa-bars');
+            }
+        });
+    }
+
     const modal = document.getElementById('paymentModal');
     const closeBtn = document.querySelector('.close');
     const paymentForm = document.getElementById('paymentForm');

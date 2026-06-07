@@ -1,5 +1,5 @@
 .container {
-    max-width: 800px;
+    max-width: 1000px;
     margin: 0 auto;
     padding: 1rem;
 }
@@ -8,51 +8,93 @@
 header {
     background-color: var(--card-bg);
     border-bottom: 1px solid var(--border);
-    padding: 0.5rem 0;
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 nav {
-    max-width: 800px;
+    max-width: 1000px;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 1rem;
+    padding: 0 1.5rem;
 }
 
 .logo {
-    font-size: 1.25rem;
-    font-weight: 700;
+    font-size: 1.4rem;
+    font-weight: 800;
     color: var(--primary);
+    text-decoration: none;
+    letter-spacing: -0.5px;
 }
 
 nav ul {
     list-style: none;
     display: flex;
-    gap: 1rem;
+    gap: 1.5rem;
 }
 
 nav a {
     text-decoration: none;
     color: var(--text);
-    font-weight: 500;
-    font-size: 0.9rem;
-    transition: color 0.2s;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: color 0.2s, background-color 0.2s;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius);
 }
 
 nav a:hover {
     color: var(--primary);
+    background-color: #eff6ff;
+}
+
+/* Mobile Nav Toggle */
+.nav-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text);
+    cursor: pointer;
 }
 
 footer {
     text-align: center;
-    padding: 1.5rem;
+    padding: 3rem 1.5rem;
     color: var(--text-muted);
-    font-size: 0.85rem;
+    font-size: 0.9rem;
+    border-top: 1px solid var(--border);
+    margin-top: 3rem;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+    nav ul {
+        display: none; /* Will be toggled by JS */
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: var(--card-bg);
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        gap: 0.5rem;
+    }
+    
+    nav ul.active {
+        display: flex;
+    }
+
+    .nav-toggle {
+        display: block;
+    }
+
     .container {
-        padding: 0.5rem;
+        padding: 1rem;
     }
 }
