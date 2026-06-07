@@ -2,7 +2,7 @@
   "name": "internetsolutions",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/app.js",
   "scripts": {
     "start": "bun src/app.js",
     "dev": "bun --watch src/app.js",

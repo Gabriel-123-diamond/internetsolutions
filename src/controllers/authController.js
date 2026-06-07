@@ -20,19 +20,35 @@ class AuthController {
 
   async login(req, res) {
     const { email, password } = req.body;
+    console.log('--- Main Login Attempt ---');
+    console.log('Email:', email);
     try {
       const user = await authService.login(email, password);
-      const isMasterAdmin = (email === 'admin' && password === process.env.ADMIN_PASSWORD); // Fallback if no user entry
+      
+      const adminPass = process.env.ADMIN_PASSWORD ? process.env.ADMIN_PASSWORD.trim() : '';
+      const isMasterAdmin = (email === 'admin' && password && password.trim() === adminPass);
 
       if (!user && !isMasterAdmin) {
+        console.log('Login failed: Invalid credentials');
         return res.redirect('/login?error=Invalid email or password');
       }
       
       req.session.userId = user ? user.id : 'admin-master';
       req.session.role = user ? user.role : 'admin';
-      res.redirect(req.session.role === 'admin' ? '/admin' : '/dashboard');
+      
+      console.log('Login success. UserID:', req.session.userId, 'Role:', req.session.role);
+      console.log('Saving session for ID:', req.sessionID);
+
+      req.session.save((err) => {
+        if (err) {
+          console.error('Session save error:', err);
+          return res.redirect('/login?error=Session save failed');
+        }
+        console.log('Session saved. Redirecting...');
+        res.redirect(req.session.role === 'admin' ? '/admin' : '/dashboard');
+      });
     } catch (err) {
-      console.error(err);
+      console.error('Login Error:', err);
       res.redirect('/login?error=Internal server error');
     }
   }

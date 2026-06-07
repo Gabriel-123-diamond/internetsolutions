@@ -4,7 +4,9 @@ const helmet = require('helmet');
 const cors = require('cors');
 const path = require('path');
 const session = require('express-session');
+const pgSession = require('connect-pg-simple')(session);
 const rateLimit = require('express-rate-limit');
+const db = require('./config/db');
 require('dotenv').config();
 
 const app = express();
@@ -63,6 +65,10 @@ app.use((req, res, next) => {
 
 app.set('trust proxy', 1); // Trust first proxy (Vercel)
 
+if (!process.env.SESSION_SECRET) {
+  console.warn('WARNING: SESSION_SECRET is not defined. Sessions will not be secure and may be lost on restart.');
+}
+
 // Session configuration
 app.use(session({
   store: new pgSession({
@@ -96,6 +102,17 @@ const adminRoutes = require('./routes/admin');
 app.use('/', portalRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/session', sessionRoutes);
+app.get('/api/session-check', (req, res) => {
+  res.json({
+    sessionID: req.sessionID,
+    userId: req.session.userId,
+    role: req.session.role,
+    cookie: req.session.cookie,
+    env: process.env.NODE_ENV,
+    secure: req.secure,
+    headers: req.headers
+  });
+});
 app.use('/admin', adminRoutes);
 
 // Error handler
