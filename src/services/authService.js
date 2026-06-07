@@ -31,6 +31,14 @@ class AuthService {
     await db.query('UPDATE users SET password = $1 WHERE id = $2', [hashed, userId]);
     return true;
   }
+
+  validateMasterAdmin(password) {
+    const adminPass = process.env.ADMIN_PASSWORD ? process.env.ADMIN_PASSWORD.trim() : '';
+    if (password && password.trim() === adminPass) {
+      return { userId: 'admin-master', role: 'admin' };
+    }
+    return null;
+  }
 }
 
 module.exports = new AuthService();

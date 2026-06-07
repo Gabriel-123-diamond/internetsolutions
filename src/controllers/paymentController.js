@@ -30,7 +30,7 @@ class PaymentController {
     try {
       const data = await paymentService.verifyTransaction(reference);
       if (data.status === 'success') {
-        const voucher = await this.createVoucher(reference, data.metadata);
+        const voucher = await voucherService.createVoucherAfterPayment(reference, data.metadata);
         res.render('payment_success', { title: 'Payment Successful', voucher });
       } else {
         res.render('error', { title: 'Payment Failed', error: 'Payment verification failed.' });
@@ -49,7 +49,7 @@ class PaymentController {
     const event = req.body;
     if (event.event === 'charge.success') {
       try {
-        await this.createVoucher(event.data.reference, event.data.metadata);
+        await voucherService.createVoucherAfterPayment(event.data.reference, event.data.metadata);
         res.status(200).send('Webhook processed');
       } catch (err) {
         console.error('Webhook error:', err);
@@ -58,39 +58,6 @@ class PaymentController {
     } else {
       res.status(200).send('Event ignored');
     }
-  }
-
-  async createVoucher(paymentRef, metadata) {
-    const { planId, userId, mac } = metadata;
-    for (let attempt = 0; attempt < 5; attempt++) {
-      const voucherCode = voucherService.generateCode();
-      const token = voucherService.generateToken();
-
-      try {
-        const existing = await db.query('SELECT * FROM vouchers WHERE payment_reference = $1', [paymentRef]);
-        if (existing.rows.length > 0) return existing.rows[0];
-
-        const plans = await voucherService.getAllPlans();
-        const plan = plans.find(p => p.id == planId);
-
-        const result = await db.query(
-          `INSERT INTO vouchers (user_id, username, password, plan_id, total_duration_allowed, total_data_allowed, status, last_mac_address, payment_reference) 
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
-          [userId, voucherCode, token, planId, plan.duration_seconds, plan.data_bytes, 'unused', mac, paymentRef]
-        );
-        return result.rows[0];
-      } catch (err) {
-        if (err.code === '23505') {
-          if (err.detail.includes('payment_reference')) {
-            const existing = await db.query('SELECT * FROM vouchers WHERE payment_reference = $1', [paymentRef]);
-            return existing.rows[0];
-          }
-          continue;
-        }
-        throw err;
-      }
-    }
-    throw new Error('Failed to generate unique voucher code');
   }
 }
 

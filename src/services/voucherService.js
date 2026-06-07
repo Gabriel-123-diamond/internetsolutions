@@ -57,6 +57,44 @@ class VoucherService {
     );
     return result.rows;
   }
+
+  async createVoucherAfterPayment(paymentRef, metadata) {
+    const { planId, userId, mac } = metadata;
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const voucherCode = this.generateCode();
+      const token = this.generateToken();
+
+      try {
+        // Check for existing voucher with this payment reference (idempotency)
+        const existing = await db.query('SELECT * FROM vouchers WHERE payment_reference = $1', [paymentRef]);
+        if (existing.rows.length > 0) return existing.rows[0];
+
+        // Get plan details
+        const plans = await this.getAllPlans();
+        const plan = plans.find(p => p.id == planId);
+        if (!plan) throw new Error('Plan not found during voucher creation');
+
+        const result = await db.query(
+          `INSERT INTO vouchers (user_id, username, password, plan_id, total_duration_allowed, total_data_allowed, status, last_mac_address, payment_reference) 
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
+          [userId, voucherCode, token, planId, plan.duration_seconds, plan.data_bytes, 'unused', mac, paymentRef]
+        );
+        return result.rows[0];
+      } catch (err) {
+        if (err.code === '23505') {
+          // Unique constraint violation (voucher code or reference)
+          if (err.detail && err.detail.includes('payment_reference')) {
+            const existing = await db.query('SELECT * FROM vouchers WHERE payment_reference = $1', [paymentRef]);
+            return existing.rows[0];
+          }
+          // If it was the voucher code, loop will retry
+          continue;
+        }
+        throw err;
+      }
+    }
+    throw new Error('Failed to generate unique voucher code after 5 attempts');
+  }
 }
 
 module.exports = new VoucherService();

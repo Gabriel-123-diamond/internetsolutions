@@ -1,5 +1,6 @@
 const adminService = require('../services/adminService');
 const voucherService = require('../services/voucherService');
+const authService = require('../services/authService');
 
 class AdminController {
   renderLogin(req, res) {
@@ -9,22 +10,24 @@ class AdminController {
   login(req, res) {
     const { adminPassword } = req.body;
     console.log('--- Admin Login Attempt ---');
-    if (adminPassword && adminPassword.trim() === (process.env.ADMIN_PASSWORD ? process.env.ADMIN_PASSWORD.trim() : '')) {
-      console.log('Password match success');
-      req.session.userId = 'admin-master';
-      req.session.role = 'admin';
+    
+    const admin = authService.validateMasterAdmin(adminPassword);
+
+    if (admin) {
+      console.log('Master password match success');
+      req.session.userId = admin.userId;
+      req.session.role = admin.role;
       
-      console.log('Saving session for ID:', req.sessionID);
       return req.session.save((err) => {
         if (err) {
           console.error('Session save error:', err);
           return res.redirect('/admin/login?error=Session save failed');
         }
-        console.log('Session saved successfully, redirecting to /admin');
         res.redirect('/admin');
       });
     }
-    console.log('Password mismatch');
+    
+    console.log('Master password mismatch');
     res.redirect('/admin/login?error=Invalid master password');
   }
 

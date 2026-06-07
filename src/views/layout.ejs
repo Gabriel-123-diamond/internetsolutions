@@ -94,17 +94,17 @@
         <nav class="bottom-nav">
             <ul class="bottom-nav-menu">
                 <li class="bottom-nav-item <%= title === 'Welcome to Our Captive Portal' ? 'active' : '' %>">
-                    <a href="/portal"><i class="fas fa-home-alt"></i><span>HOME</span></a>
+                    <a href="/portal"><i class="fas fa-house-signal"></i><span>HOME</span></a>
                 </li>
                 <li class="bottom-nav-item <%= title === 'User Dashboard' ? 'active' : '' %>">
-                    <a href="/dashboard"><i class="fas fa-grid-2"></i><span>STATS</span></a>
+                    <a href="/dashboard"><i class="fas fa-chart-pie"></i><span>STATS</span></a>
                 </li>
-                <li class="bottom-nav-item <%= title === 'Account Settings' ? 'active' : '' %>">
-                    <a href="/settings"><i class="fas fa-user-circle"></i><span>PROFILE</span></a>
+                <li class="bottom-nav-item <%= title === 'User Login' || title === 'Register' || title === 'Account Settings' ? 'active' : '' %>">
+                    <a href="/settings"><i class="fas fa-user-gear"></i><span>PROFILE</span></a>
                 </li>
                 <% if (locals.session && locals.session.role === 'admin') { %>
                 <li class="bottom-nav-item <%= title.includes('Admin') ? 'active' : '' %>">
-                    <a href="/admin"><i class="fas fa-shield-bolt"></i><span>ADMIN</span></a>
+                    <a href="/admin"><i class="fas fa-user-shield"></i><span>ADMIN</span></a>
                 </li>
                 <% } else { %>
                 <li class="bottom-nav-item">
