@@ -58,6 +58,8 @@ app.use(express.json({
 }));
 app.use(express.urlencoded({ extended: true }));
 
+app.set('trust proxy', 1); // Required for secure cookies on Vercel/Render
+
 // Session configuration
 app.use(session({
   store: new pgSession({
