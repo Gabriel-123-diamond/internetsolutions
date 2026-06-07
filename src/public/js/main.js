@@ -31,6 +31,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Password Toggle Logic
+    const togglePasswords = document.querySelectorAll('.toggle-password');
+    togglePasswords.forEach(eye => {
+        eye.addEventListener('click', function() {
+            const input = this.parentElement.querySelector('input');
+            if (input.type === 'password') {
+                input.type = 'text';
+                this.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                this.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        });
+    });
+
     // Paystack Inline Integration
     if (paymentForm) {
         paymentForm.addEventListener('submit', async (e) => {
