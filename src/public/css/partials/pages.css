@@ -1,132 +1,105 @@
-/* Portal Hero */
+/* Page Specific Enhancements for Centered App */
+
+/* Hero Sections */
 .portal-hero {
-    padding: 3rem 1rem;
     text-align: center;
-    max-width: 800px;
-    margin: 0 auto;
+    padding: 2rem 0;
 }
 
 .portal-hero h1 {
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: var(--text);
-    line-height: 1.2;
+    font-size: 2.2rem;
+    line-height: 1.1;
     margin-bottom: 1rem;
-    letter-spacing: -0.025em;
+    background: linear-gradient(to bottom, #fff, rgba(255,255,255,0.7));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .portal-hero p {
-    font-size: 1.125rem;
     color: var(--text-muted);
-    margin-bottom: 2rem;
+    font-size: 1rem;
+    max-width: 300px;
+    margin: 0 auto 2rem auto;
 }
 
-/* Plans Grid (Responsive) */
+/* Plans List (Stacking nicely in 480px) */
 .plans-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
 }
 
 .plan-card {
-    display: flex;
-    flex-direction: column;
-    padding: 2rem;
-    height: 100%;
-}
-
-.plan-card h3 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
+    border-radius: var(--radius);
+    padding: 1.5rem;
 }
 
 .plan-card .price {
-    font-size: 2.25rem;
+    font-size: 2rem;
     font-weight: 800;
-    color: var(--primary);
-    margin: 1rem 0;
+    color: var(--accent);
+    margin: 0.5rem 0;
+    filter: drop-shadow(0 0 5px rgba(34, 211, 238, 0.4));
 }
 
 .plan-card .price span {
-    font-size: 1rem;
+    font-size: 0.8rem;
     color: var(--text-muted);
-    font-weight: 500;
 }
 
 .plan-card ul {
     list-style: none;
-    margin: 1.5rem 0 2rem 0;
-    flex: 1;
+    margin: 1rem 0 1.5rem 0;
 }
 
 .plan-card li {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    margin-bottom: 0.75rem;
-    font-size: 0.9375rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
     color: var(--text-muted);
 }
 
 .plan-card li i {
-    color: var(--success);
-    font-size: 1rem;
-}
-
-/* Dashboard Metrics */
-.metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-}
-
-.metric-card {
-    padding: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-}
-
-.metric-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: var(--radius);
-    background-color: var(--primary-light);
     color: var(--primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
 }
 
-.metric-info h4 {
-    font-size: 0.875rem;
+/* Admin Stats Cards */
+.admin-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.admin-stats-grid .card {
+    padding: 1.25rem;
+    text-align: center;
+}
+
+.admin-stats-grid .card i {
+    margin-bottom: 0.5rem;
+    filter: drop-shadow(0 0 5px var(--primary));
+}
+
+.admin-stats-grid h3 {
+    font-size: 0.75rem;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
     margin-bottom: 0.25rem;
 }
 
-.metric-info .value {
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: var(--text);
+.admin-stats-grid .stat-value {
+    font-size: 1.1rem !important;
 }
 
-/* Responsive Overrides */
-@media (max-width: 768px) {
-    .portal-hero h1 {
-        font-size: 2rem;
-    }
-    
-    .portal-hero p {
-        font-size: 1rem;
-    }
-    
-    .plans-grid {
-        grid-template-columns: 1fr; /* Force stack on mobile */
-    }
+/* Table Wrappers for narrow width */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+table {
+    min-width: 400px;
 }

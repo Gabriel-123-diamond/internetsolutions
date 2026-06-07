@@ -9,87 +9,53 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <div class="app-wrapper">
-        <!-- Sidebar Navigation (Desktop & Tablet) -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <i class="fas fa-wifi fa-2x" style="color: var(--primary)"></i>
-                <span class="sidebar-logo">Solutions</span>
-            </div>
-            <ul class="sidebar-menu">
-                <li class="sidebar-item <%= title === 'Welcome to Our Captive Portal' ? 'active' : '' %>">
-                    <a href="/portal"><i class="fas fa-home"></i> <span>Home</span></a>
-                </li>
-                <li class="sidebar-item <%= title === 'User Login' ? 'active' : '' %>">
-                    <a href="/login"><i class="fas fa-sign-in-alt"></i> <span>Login</span></a>
-                </li>
-                <li class="sidebar-item <%= title === 'Register' ? 'active' : '' %>">
-                    <a href="/register"><i class="fas fa-user-plus"></i> <span>Register</span></a>
-                </li>
-                <li class="sidebar-item <%= title === 'User Dashboard' ? 'active' : '' %>">
-                    <a href="/dashboard"><i class="fas fa-chart-line"></i> <span>Dashboard</span></a>
-                </li>
-                <li class="sidebar-item <%= title === 'Account Settings' ? 'active' : '' %>">
-                    <a href="/settings"><i class="fas fa-cog"></i> <span>Settings</span></a>
-                </li>
-                <% if (locals.session && locals.session.role === 'admin') { %>
-                <li class="sidebar-item <%= title.includes('Admin') ? 'active' : '' %>">
-                    <a href="/admin"><i class="fas fa-user-shield"></i> <span>Admin</span></a>
-                </li>
-                <% } %>
-            </ul>
-            <div class="sidebar-footer">
-                <% if (locals.session && locals.session.userId) { %>
-                <a href="/logout" class="sidebar-item"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
-                <% } %>
-            </div>
-        </aside>
+    <div class="app-container">
+        <!-- Universal Top Navigation -->
+        <header class="top-nav">
+            <a href="/portal" class="top-nav-logo">
+                <i class="fas fa-bolt"></i>
+                <span>Solutions</span>
+            </a>
+            <% if (locals.session && locals.session.userId) { %>
+                <a href="/logout" style="color: var(--danger); font-size: 1.2rem;"><i class="fas fa-power-off"></i></a>
+            <% } else { %>
+                <a href="/login" style="color: var(--primary); font-weight: 800; font-size: 0.8rem; letter-spacing: 1px;">LOGIN</a>
+            <% } %>
+        </header>
 
-        <div class="main-content">
-            <!-- Mobile Top Bar -->
-            <header class="mobile-top-bar">
-                <div class="sidebar-header" style="padding: 0">
-                    <i class="fas fa-wifi" style="color: var(--primary)"></i>
-                    <span class="sidebar-logo" style="display: block; font-size: 1.1rem">Solutions</span>
+        <!-- Main Scrollable Content Area -->
+        <div class="scroll-area no-scrollbar">
+            <% if (locals.error) { %>
+                <div class="alert alert-danger">
+                    <i class="fas fa-circle-exclamation"></i> <%= error %>
                 </div>
-                <% if (locals.session && locals.session.userId) { %>
-                    <a href="/logout" style="color: var(--text-muted)"><i class="fas fa-sign-out-alt"></i></a>
-                <% } else { %>
-                    <a href="/login" style="color: var(--primary); font-weight: 700; font-size: 0.9rem">LOGIN</a>
-                <% } %>
-            </header>
+            <% } %>
+            <% if (locals.notice) { %>
+                <div class="alert alert-info">
+                    <i class="fas fa-circle-info"></i> <%= notice %>
+                </div>
+            <% } %>
 
-            <main class="container">
-                <% if (locals.error) { %>
-                    <div class="alert alert-danger">
-                        <i class="fas fa-exclamation-circle"></i> <%= error %>
-                    </div>
-                <% } %>
-                <% if (locals.notice) { %>
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle"></i> <%= notice %>
-                    </div>
-                <% } %>
-
-                <%- body %>
-            </main>
+            <%- body %>
         </div>
 
-        <!-- Bottom Navigation (Mobile Only) -->
+        <!-- Universal Bottom Navigation -->
         <nav class="bottom-nav">
             <ul class="bottom-nav-menu">
                 <li class="bottom-nav-item <%= title === 'Welcome to Our Captive Portal' ? 'active' : '' %>">
-                    <a href="/portal"><i class="fas fa-home"></i><span>Home</span></a>
+                    <a href="/portal"><i class="fas fa-home-alt"></i><span>HOME</span></a>
                 </li>
-                <li class="bottom-nav-item <%= title === 'User Login' || title === 'Register' ? 'active' : '' %>">
-                    <a href="/login"><i class="fas fa-user"></i><span>Account</span></a>
+                <li class="bottom-nav-item <%= title === 'User Login' || title === 'Register' || title === 'Account Settings' ? 'active' : '' %>">
+                    <a href="/settings"><i class="fas fa-user-circle"></i><span>PROFILE</span></a>
                 </li>
                 <li class="bottom-nav-item <%= title === 'User Dashboard' ? 'active' : '' %>">
-                    <a href="/dashboard"><i class="fas fa-chart-line"></i><span>Stats</span></a>
+                    <a href="/dashboard"><i class="fas fa-grid-2"></i><span>STATS</span></a>
                 </li>
-                <li class="bottom-nav-item <%= title === 'Account Settings' ? 'active' : '' %>">
-                    <a href="/settings"><i class="fas fa-cog"></i><span>Settings</span></a>
+                <% if (locals.session && locals.session.role === 'admin') { %>
+                <li class="bottom-nav-item <%= title.includes('Admin') ? 'active' : '' %>">
+                    <a href="/admin"><i class="fas fa-shield-bolt"></i><span>ADMIN</span></a>
                 </li>
+                <% } %>
             </ul>
         </nav>
     </div>
