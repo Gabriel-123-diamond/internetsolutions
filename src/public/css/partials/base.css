@@ -49,6 +49,21 @@ body {
     overflow-x: hidden;
 }
 
+a {
+    color: var(--accent);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+a:hover {
+    color: var(--primary);
+    filter: drop-shadow(0 0 5px var(--primary));
+}
+
+button, input {
+    font-family: inherit;
+}
+
 @keyframes gradientBG {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
