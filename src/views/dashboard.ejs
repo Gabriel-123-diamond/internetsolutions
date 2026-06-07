@@ -17,19 +17,41 @@
 
     <div class="card">
         <h3>My Vouchers</h3>
-        <table style="width: 100%; border-collapse: collapse; margin-top: 1rem; text-align: left;">
-            <thead>
-                <tr style="border-bottom: 2px solid var(--border);">
-                    <th style="padding: 0.5rem;">Code</th>
-                    <th style="padding: 0.5rem;">Status</th>
-                    <th style="padding: 0.5rem;">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td colspan="3" style="padding: 1rem; text-align: center; color: var(--text-muted);">No vouchers found.</td>
-                </tr>
-            </tbody>
-        </table>
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; margin-top: 1rem; text-align: left;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--border);">
+                        <th style="padding: 0.5rem;">Code</th>
+                        <th style="padding: 0.5rem;">Status</th>
+                        <th style="padding: 0.5rem;">Plan</th>
+                        <th style="padding: 0.5rem;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (vouchers && vouchers.length > 0) { %>
+                        <% vouchers.forEach(v => { %>
+                            <tr style="border-bottom: 1px solid var(--border);">
+                                <td style="padding: 0.75rem;"><code style="font-weight: bold; background: #f1f5f9; padding: 2px 4px; border-radius: 4px;"><%= v.username %></code></td>
+                                <td style="padding: 0.75rem;"><span class="badge badge-<%= v.status %>"><%= v.status.toUpperCase() %></span></td>
+                                <td style="padding: 0.75rem;"><%= v.plan_name %></td>
+                                <td style="padding: 0.75rem;">
+                                    <% if (v.status === 'active') { %>
+                                        <button class="btn btn-danger pause-session" data-id="<%= v.id %>" data-mac="<%= v.last_mac_address %>" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">
+                                            <i class="fas fa-pause"></i> Pause
+                                        </button>
+                                    <% } else { %>
+                                        <span style="color: var(--text-muted); font-size: 0.8rem;">-</span>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="4" style="padding: 1rem; text-align: center; color: var(--text-muted);">No vouchers found.</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>

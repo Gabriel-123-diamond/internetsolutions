@@ -99,4 +99,39 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Dashboard Pause Session
+    const pauseButtons = document.querySelectorAll('.pause-session');
+    pauseButtons.forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const voucherId = this.getAttribute('data-id');
+            const mac = this.getAttribute('data-mac');
+
+            if (!confirm('Are you sure you want to pause your session and logout?')) return;
+
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Pausing...';
+
+            try {
+                const response = await fetch('/api/session/pause', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ voucherId, mac })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    alert('Session paused successfully!');
+                    window.location.reload();
+                } else {
+                    throw new Error(data.error || 'Failed to pause session');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Error: ' + err.message);
+                this.disabled = false;
+                this.innerHTML = '<i class="fas fa-pause"></i> Pause';
+            }
+        });
+    });
 });
