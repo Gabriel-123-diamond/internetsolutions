@@ -57,19 +57,6 @@ app.use(express.json({
 }));
 app.use(express.urlencoded({ extended: true }));
 
-// Global variables for views
-app.use((req, res, next) => {
-  res.locals.PAYSTACK_PUBLIC_KEY = process.env.PAYSTACK_PUBLIC_KEY || process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
-  res.locals.session = req.session;
-  next();
-});
-
-app.set('trust proxy', 1); // Trust first proxy (Vercel)
-
-if (!process.env.SESSION_SECRET) {
-  console.warn('WARNING: SESSION_SECRET is not defined. Sessions will not be secure and may be lost on restart.');
-}
-
 // Session configuration
 app.use(session({
   store: new pgSession({
@@ -86,6 +73,13 @@ app.use(session({
     secure: process.env.NODE_ENV === 'production'
   }
 }));
+
+// Global variables for views
+app.use((req, res, next) => {
+  res.locals.PAYSTACK_PUBLIC_KEY = process.env.PAYSTACK_PUBLIC_KEY || process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
+  res.locals.session = req.session;
+  next();
+});
 
 // View engine setup
 app.use(expressLayouts);
