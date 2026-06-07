@@ -31,19 +31,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const planId = btn.getAttribute('data-plan-id');
             console.log("Plan selected:", planId);
             selectedPlanInput.value = planId;
-            modal.style.display = 'block';
+            modal.classList.add('active');
         });
     });
 
     if (closeBtn) {
         closeBtn.onclick = () => {
-            modal.style.display = 'none';
+            modal.classList.remove('active');
         };
     }
 
     window.onclick = (event) => {
         if (event.target == modal) {
-            modal.style.display = 'none';
+            modal.classList.remove('active');
         }
     };
 

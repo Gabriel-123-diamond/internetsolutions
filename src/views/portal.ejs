@@ -5,41 +5,38 @@
 
 <section class="login-section">
     <div class="card">
-        <h2><i class="fas fa-key"></i> Voucher Login</h2>
+        <h2 style="margin-bottom: 0.5rem;"><i class="fas fa-key"></i> Voucher Login</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Enter your 6-character code below</p>
         <form action="/login/voucher" method="POST">
             <div class="form-group">
-                <label for="voucherCode">Voucher Code</label>
-                <input type="text" id="voucherCode" name="voucherCode" placeholder="Enter 6-character code" maxlength="6" required>
+                <input type="text" id="voucherCode" name="voucherCode" placeholder="ABCDEF" maxlength="6" required style="text-align: center; font-weight: 800; font-size: 1.5rem; letter-spacing: 4px;">
             </div>
-            <button type="submit" class="btn btn-primary btn-block">Connect Now</button>
+            <button type="submit" class="btn btn-primary btn-block">CONNECT INTERNET</button>
         </form>
-        <p style="margin-top: 1rem;">Or <a href="/login">Login to your account</a></p>
+        <p style="margin-top: 1.5rem; font-size: 0.9rem;">No voucher? <a href="#plansGrid" style="color: var(--accent); font-weight: 700;">Purchase one below</a></p>
     </div>
 </section>
 
-<section class="admin-entry">
-    <a href="/admin/login" class="btn btn-primary"><i class="fas fa-user-shield"></i> Admin Access</a>
-</section>
-
-<section class="plans-section">
-    <h2><i class="fas fa-wifi"></i> Purchase a Plan</h2>
-    <p>Don't have a voucher? Choose a plan below.</p>
+<section class="plans-section" id="plansGrid">
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <h2 class="text-gradient" style="margin-bottom: 0.25rem;">Available Plans</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Instant activation after payment</p>
+    </div>
     
-    <div class="plans-grid" id="plansGrid">
+    <div class="plans-grid">
         <% plans.forEach(plan => { %>
-            <div class="plan-card">
+            <div class="plan-card card">
                 <h3><%= plan.name %></h3>
-                <div class="price">₦<%= parseFloat(plan.price).toLocaleString() %></div>
+                <div class="price">₦<%= parseFloat(plan.price).toLocaleString() %><span>/one-time</span></div>
+                <div style="height: 1px; background: var(--glass-border); margin: 1rem 0;"></div>
                 <ul>
-                    <li><%= plan.duration_seconds > 0 ? (plan.duration_seconds / 3600).toFixed(1) + ' Hours' : 'Unlimited' %> Access</li>
-                    <li><%= plan.data_bytes > 0 ? (plan.data_bytes / (1024*1024*1024)).toFixed(1) + ' GB' : 'Unlimited' %> Data</li>
+                    <li><i class="fas fa-clock"></i> <%= plan.duration_seconds > 0 ? (plan.duration_seconds / 3600).toFixed(1) + ' Hours' : 'Unlimited' %> Access</li>
+                    <li><i class="fas fa-database"></i> <%= plan.data_bytes > 0 ? (plan.data_bytes / (1024*1024*1024)).toFixed(1) + ' GB' : 'Unlimited' %> Data</li>
+                    <li><i class="fas fa-check-circle"></i> High-Speed Connectivity</li>
                 </ul>
-                <button class="btn btn-success buy-plan" data-plan-id="<%= plan.id %>">Buy Now</button>
+                <button class="btn btn-primary buy-plan" data-plan-id="<%= plan.id %>" style="background: linear-gradient(45deg, var(--accent), #0891b2);">BUY VOUCHER</button>
             </div>
         <% }); %>
-        <% if (plans.length === 0) { %>
-            <p>No plans available at the moment.</p>
-        <% } %>
     </div>
 </section>
 

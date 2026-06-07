@@ -16,11 +16,16 @@
                 <i class="fas fa-bolt"></i>
                 <span>Solutions</span>
             </a>
-            <% if (locals.session && locals.session.userId) { %>
-                <a href="/logout" style="color: var(--danger); font-size: 1.2rem;"><i class="fas fa-power-off"></i></a>
-            <% } else { %>
-                <a href="/login" style="color: var(--primary); font-weight: 800; font-size: 0.8rem; letter-spacing: 1px;">LOGIN</a>
-            <% } %>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <% if (!locals.session || locals.session.role !== 'admin') { %>
+                    <a href="/admin/login" style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600;">ADMIN</a>
+                <% } %>
+                <% if (locals.session && locals.session.userId) { %>
+                    <a href="/logout" style="color: var(--danger); font-size: 1.2rem;"><i class="fas fa-power-off"></i></a>
+                <% } else { %>
+                    <a href="/login" style="color: var(--primary); font-weight: 800; font-size: 0.8rem; letter-spacing: 1px;">LOGIN</a>
+                <% } %>
+            </div>
         </header>
 
         <!-- Main Scrollable Content Area -->
@@ -54,6 +59,10 @@
                 <% if (locals.session && locals.session.role === 'admin') { %>
                 <li class="bottom-nav-item <%= title.includes('Admin') ? 'active' : '' %>">
                     <a href="/admin"><i class="fas fa-shield-bolt"></i><span>ADMIN</span></a>
+                </li>
+                <% } else { %>
+                <li class="bottom-nav-item">
+                    <a href="/admin/login"><i class="fas fa-lock"></i><span>ADMIN</span></a>
                 </li>
                 <% } %>
             </ul>
