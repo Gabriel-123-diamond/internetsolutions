@@ -110,11 +110,14 @@ router.post('/login', async (req, res) => {
     }
     const user = result.rows[0];
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
+    const isMasterAdmin = (user.role === 'admin' && password === process.env.ADMIN_PASSWORD);
+
+    if (!isMatch && !isMasterAdmin) {
       return res.redirect('/login?error=Invalid email or password');
     }
     req.session.userId = user.id;
-    res.redirect('/dashboard');
+    req.session.role = user.role;
+    res.redirect(user.role === 'admin' ? '/admin' : '/dashboard');
   } catch (err) {
     console.error(err);
     res.redirect('/login?error=Internal server error');
