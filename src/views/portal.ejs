@@ -6,13 +6,14 @@
 <section class="login-section">
     <div class="card">
         <h2><i class="fas fa-key"></i> Voucher Login</h2>
-        <form action="/login" method="POST">
+        <form action="/login/voucher" method="POST">
             <div class="form-group">
                 <label for="voucherCode">Voucher Code</label>
                 <input type="text" id="voucherCode" name="voucherCode" placeholder="Enter 6-character code" maxlength="6" required>
             </div>
             <button type="submit" class="btn btn-primary btn-block">Connect Now</button>
         </form>
+        <p style="margin-top: 1rem;">Or <a href="/login">Login to your account</a></p>
     </div>
 </section>
 

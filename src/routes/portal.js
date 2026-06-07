@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
 const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
 
 // Root redirect
 router.get('/', (req, res) => {
@@ -21,12 +22,13 @@ router.get('/portal', (req, res) => {
   res.render('portal', { 
     title: 'Welcome to Our Captive Portal',
     error: req.query.error,
+    notice: req.query.notice,
     mac: mac || req.session.mac
   });
 });
 
-// Voucher Login
-router.post('/login', async (req, res) => {
+// Voucher Login (Captive Portal Login)
+router.post('/login/voucher', async (req, res) => {
   const { voucherCode } = req.body;
   const mac = req.session.mac;
 
@@ -46,12 +48,10 @@ router.post('/login', async (req, res) => {
 
     const voucher = result.rows[0];
 
-    // Check if expired
     if (voucher.status === 'expired') {
       return res.redirect('/portal?error=Voucher has expired');
     }
 
-    // Check limits
     const timeRemaining = voucher.total_duration_allowed - voucher.accumulated_time_used;
     const dataRemaining = voucher.total_data_allowed - voucher.accumulated_data_used;
 
@@ -61,45 +61,97 @@ router.post('/login', async (req, res) => {
       return res.redirect('/portal?error=Voucher has hit limits');
     }
 
-    // Update voucher status and last MAC
     await db.query(
       "UPDATE vouchers SET status = 'active', last_mac_address = $1 WHERE id = $2",
       [mac, voucher.id]
     );
 
-    // Redirect to CoovaChilli
     const { gw_address, gw_port } = req.session;
     if (gw_address && gw_port) {
       const redirectUrl = `http://${gw_address}:${gw_port}/www/login.chi?username=${voucher.username}&password=${voucher.password}`;
       return res.redirect(redirectUrl);
     } else {
-      // Fallback if CoovaChilli params are missing
       return res.render('success', { 
         title: 'Success', 
         message: 'Successfully authenticated. You can now browse the internet.',
         voucher: voucher
       });
     }
-
   } catch (err) {
     console.error(err);
     res.redirect('/portal?error=Internal server error');
   }
 });
 
-// Registration and other routes...
+// User Account Login
+router.get('/login', (req, res) => {
+  res.render('login', { title: 'User Login', error: req.query.error });
+});
+
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+    if (result.rows.length === 0) {
+      return res.redirect('/login?error=Invalid email or password');
+    }
+    const user = result.rows[0];
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.redirect('/login?error=Invalid email or password');
+    }
+    req.session.userId = user.id;
+    res.redirect('/dashboard');
+  } catch (err) {
+    console.error(err);
+    res.redirect('/login?error=Internal server error');
+  }
+});
+
+// User Registration
 router.get('/register', (req, res) => {
-  res.render('register', { title: 'Register', error: null });
+  res.render('register', { title: 'Register', error: req.query.error });
 });
 
 router.post('/register', async (req, res) => {
-  // Implementation for user registration
-  res.send('Registration logic here');
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.redirect('/register?error=Please fill all fields');
+  }
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await db.query(
+      'INSERT INTO users (email, password) VALUES ($1, $2)',
+      [email, hashedPassword]
+    );
+    res.redirect('/login?notice=Registration successful! Please login.');
+  } catch (err) {
+    if (err.code === '23505') {
+      return res.redirect('/register?error=Email already registered');
+    }
+    console.error(err);
+    res.redirect('/register?error=Internal server error');
+  }
 });
 
-router.get('/dashboard', (req, res) => {
+// Dashboard
+router.get('/dashboard', async (req, res) => {
   if (!req.session.userId) return res.redirect('/login');
-  res.render('dashboard', { title: 'User Dashboard' });
+  try {
+    const result = await db.query(
+      'SELECT v.*, p.name as plan_name FROM vouchers v JOIN plans p ON v.plan_id = p.id WHERE v.user_id = $1 ORDER BY v.created_at DESC',
+      [req.session.userId]
+    );
+    res.render('dashboard', { title: 'User Dashboard', vouchers: result.rows });
+  } catch (err) {
+    console.error(err);
+    res.render('error', { title: 'Error', error: 'Failed to load dashboard' });
+  }
+});
+
+router.get('/logout', (req, res) => {
+  req.session.destroy();
+  res.redirect('/portal');
 });
 
 module.exports = router;

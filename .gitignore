@@ -12,3 +12,4 @@ build/
 RENDER_ENV.md
 VERCEL_ENV.md
 schema.sql
+render_deploy.js
