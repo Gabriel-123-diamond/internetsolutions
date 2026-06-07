@@ -3,6 +3,11 @@ const router = express.Router();
 const db = require('../config/db');
 const crypto = require('crypto');
 
+// Root redirect
+router.get('/', (req, res) => {
+  res.redirect('/portal');
+});
+
 // Captive Portal landing page
 router.get('/portal', (req, res) => {
   const { mac, ip, gw_address, gw_port } = req.query;
