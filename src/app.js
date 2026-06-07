@@ -55,6 +55,12 @@ app.use(express.json({
 }));
 app.use(express.urlencoded({ extended: true }));
 
+// Global variables for views
+app.use((req, res, next) => {
+  res.locals.PAYSTACK_PUBLIC_KEY = process.env.PAYSTACK_PUBLIC_KEY || process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "pk_test_48b78021e92f66d403c42ede714bffbb77959516";
+  next();
+});
+
 // Session configuration
 app.use(session({
   secret: process.env.SESSION_SECRET || 'fallback_secret',

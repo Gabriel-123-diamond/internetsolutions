@@ -19,6 +19,8 @@
         </nav>
     </header>
 
+    <input type="hidden" id="paystack-public-key" value="<%= locals.PAYSTACK_PUBLIC_KEY %>">
+
     <main class="container">
         <% if (locals.error) { %>
             <div class="alert alert-danger">

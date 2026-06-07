@@ -37,6 +37,7 @@ router.post('/initiate', async (req, res) => {
     const response = await axios.post('https://api.paystack.co/transaction/initialize', {
       email: email,
       amount: Math.round(plan.price * 100), // Minor currency (Kobo)
+      callback_url: `${req.protocol}://${req.get('host')}/api/payment/success`,
       metadata: {
         planId,
         userId,
