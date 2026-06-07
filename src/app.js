@@ -61,8 +61,14 @@ app.use((req, res, next) => {
   next();
 });
 
+app.set('trust proxy', 1); // Trust first proxy (Vercel)
+
 // Session configuration
 app.use(session({
+  store: new pgSession({
+    pool: db.pool,
+    tableName: 'session'
+  }),
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
