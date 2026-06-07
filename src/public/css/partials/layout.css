@@ -1,45 +1,91 @@
-/* Universal Navigation Structures for Floating App */
-
-/* Top Navigation Bar */
-.top-nav {
+/* Desktop Sidebar (Persistent) */
+.sidebar {
+    width: var(--sidebar-width);
+    background: rgba(255, 255, 255, 0.03);
+    border-right: 1px solid var(--glass-border);
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.25rem 1.5rem;
-    background: rgba(255, 255, 255, 0.05);
-    border-bottom: 1px solid var(--glass-border);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    z-index: 100;
+    flex-direction: column;
+    height: 100vh;
+    position: sticky;
+    top: 0;
 }
 
-.top-nav-logo {
+.sidebar-header {
+    padding: 2.5rem 1.5rem;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 1.1rem;
+    gap: 0.75rem;
+}
+
+.sidebar-logo {
+    font-size: 1.25rem;
     font-weight: 800;
     color: #fff;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
-.top-nav-logo i {
+.sidebar-logo i {
     color: var(--primary);
     filter: drop-shadow(0 0 5px var(--primary));
 }
 
-/* Bottom Navigation Bar */
+.sidebar-menu {
+    flex: 1;
+    padding: 0 1rem;
+    list-style: none;
+}
+
+.sidebar-item a {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: var(--radius);
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-bottom: 0.5rem;
+}
+
+.sidebar-item a i {
+    font-size: 1.2rem;
+    width: 24px;
+    text-align: center;
+}
+
+.sidebar-item a:hover, .sidebar-item.active a {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--primary);
+}
+
+.sidebar-footer {
+    padding: 1.5rem;
+    border-top: 1px solid var(--glass-border);
+}
+
+/* Navigation Headers */
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid var(--glass-border);
+}
+
+/* Bottom Navigation (Mobile/Tablet Only) */
 .bottom-nav {
-    position: absolute;
+    display: none;
+    position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
     height: var(--mobile-nav-height);
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-top: 1px solid var(--glass-border);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     padding-bottom: var(--safe-area-bottom);
     z-index: 100;
 }
@@ -59,28 +105,24 @@
     gap: 0.2rem;
     color: rgba(255, 255, 255, 0.5);
     font-size: 0.65rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.bottom-nav-item a i {
-    font-size: 1.4rem;
+    font-weight: 700;
 }
 
 .bottom-nav-item.active a {
     color: var(--primary);
-    filter: drop-shadow(0 0 8px var(--primary));
 }
 
-/* Typography & Layout Utilities */
-h1, h2, h3 {
-    font-weight: 800;
-    margin-bottom: 1rem;
-    letter-spacing: -0.025em;
-}
-
-.text-gradient {
-    background: linear-gradient(to right, var(--primary), var(--accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+/* Responsiveness Switching */
+@media (max-width: 1024px) {
+    .sidebar {
+        display: none;
+    }
+    
+    .bottom-nav {
+        display: block;
+    }
+    
+    .top-nav {
+        padding: 1rem 1.25rem;
+    }
 }

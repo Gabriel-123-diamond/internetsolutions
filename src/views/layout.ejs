@@ -5,56 +5,102 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title><%= title %> | Internet Solutions</title>
     <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#f472b6">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <div class="app-container">
-        <!-- Universal Top Navigation -->
-        <header class="top-nav">
-            <a href="/portal" class="top-nav-logo">
-                <i class="fas fa-bolt"></i>
-                <span>Solutions</span>
-            </a>
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <% if (!locals.session || locals.session.role !== 'admin') { %>
-                    <a href="/admin/login" style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600;">ADMIN</a>
-                <% } %>
-                <% if (locals.session && locals.session.userId) { %>
-                    <a href="/logout" style="color: var(--danger); font-size: 1.2rem;"><i class="fas fa-power-off"></i></a>
+    <div class="app-wrapper">
+        <!-- Desktop Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="fas fa-bolt"></i>
+                    <span>Solutions</span>
+                </div>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item <%= title === 'Welcome to Our Captive Portal' ? 'active' : '' %>">
+                    <a href="/portal"><i class="fas fa-home-alt"></i> <span>Home</span></a>
+                </li>
+                <li class="sidebar-item <%= title === 'User Dashboard' ? 'active' : '' %>">
+                    <a href="/dashboard"><i class="fas fa-grid-2"></i> <span>Dashboard</span></a>
+                </li>
+                <li class="sidebar-item <%= title === 'Account Settings' ? 'active' : '' %>">
+                    <a href="/settings"><i class="fas fa-user-circle"></i> <span>My Account</span></a>
+                </li>
+                <% if (locals.session && locals.session.role === 'admin') { %>
+                <li class="sidebar-item <%= title.includes('Admin') ? 'active' : '' %>">
+                    <a href="/admin"><i class="fas fa-shield-bolt"></i> <span>Admin Panel</span></a>
+                </li>
                 <% } else { %>
-                    <a href="/login" style="color: var(--primary); font-weight: 800; font-size: 0.8rem; letter-spacing: 1px;">LOGIN</a>
+                <li class="sidebar-item">
+                    <a href="/admin/login"><i class="fas fa-lock"></i> <span>Admin Login</span></a>
+                </li>
+                <% } %>
+            </ul>
+            <div class="sidebar-footer">
+                <% if (locals.session && locals.session.userId) { %>
+                    <a href="/logout" class="btn btn-danger btn-block" style="min-height: 44px; font-size: 0.8rem;">
+                        <i class="fas fa-power-off"></i> LOGOUT
+                    </a>
+                <% } else { %>
+                    <a href="/login" class="btn btn-primary btn-block" style="min-height: 44px; font-size: 0.8rem;">
+                        <i class="fas fa-sign-in-alt"></i> LOGIN
+                    </a>
                 <% } %>
             </div>
-        </header>
+        </aside>
 
-        <!-- Main Scrollable Content Area -->
-        <div class="scroll-area no-scrollbar">
-            <% if (locals.error) { %>
-                <div class="alert alert-danger">
-                    <i class="fas fa-circle-exclamation"></i> <%= error %>
+        <div class="main-content">
+            <!-- Universal Top Header (Compact) -->
+            <header class="top-nav">
+                <div class="top-nav-logo" style="display: none;"> <!-- Visible only on mobile via CSS if needed -->
+                    <i class="fas fa-bolt"></i>
+                    <span>Solutions</span>
                 </div>
-            <% } %>
-            <% if (locals.notice) { %>
-                <div class="alert alert-info">
-                    <i class="fas fa-circle-info"></i> <%= notice %>
+                <div class="page-title" style="font-weight: 700; font-size: 0.9rem; color: var(--text-muted);">
+                    <%= title.toUpperCase() %>
                 </div>
-            <% } %>
+                <div class="top-nav-actions">
+                    <% if (locals.session && locals.session.userId) { %>
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.7rem;">
+                            <%= locals.session.role === 'admin' ? 'AD' : 'US' %>
+                        </div>
+                    <% } %>
+                </div>
+            </header>
 
-            <%- body %>
+            <main class="scroll-area no-scrollbar">
+                <% if (locals.error) { %>
+                    <div class="alert alert-danger">
+                        <i class="fas fa-circle-exclamation"></i> <%= error %>
+                    </div>
+                <% } %>
+                <% if (locals.notice) { %>
+                    <div class="alert alert-info">
+                        <i class="fas fa-circle-info"></i> <%= notice %>
+                    </div>
+                <% } %>
+
+                <%- body %>
+            </main>
         </div>
 
-        <!-- Universal Bottom Navigation -->
+        <!-- Universal Bottom Navigation (Mobile/Tablet Only) -->
         <nav class="bottom-nav">
             <ul class="bottom-nav-menu">
                 <li class="bottom-nav-item <%= title === 'Welcome to Our Captive Portal' ? 'active' : '' %>">
                     <a href="/portal"><i class="fas fa-home-alt"></i><span>HOME</span></a>
                 </li>
-                <li class="bottom-nav-item <%= title === 'User Login' || title === 'Register' || title === 'Account Settings' ? 'active' : '' %>">
-                    <a href="/settings"><i class="fas fa-user-circle"></i><span>PROFILE</span></a>
-                </li>
                 <li class="bottom-nav-item <%= title === 'User Dashboard' ? 'active' : '' %>">
                     <a href="/dashboard"><i class="fas fa-grid-2"></i><span>STATS</span></a>
+                </li>
+                <li class="bottom-nav-item <%= title === 'Account Settings' ? 'active' : '' %>">
+                    <a href="/settings"><i class="fas fa-user-circle"></i><span>PROFILE</span></a>
                 </li>
                 <% if (locals.session && locals.session.role === 'admin') { %>
                 <li class="bottom-nav-item <%= title.includes('Admin') ? 'active' : '' %>">
@@ -73,5 +119,12 @@
 
     <script src="https://js.paystack.co/v1/inline.js"></script>
     <script src="/js/main.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js');
+            });
+        }
+    </script>
 </body>
 </html>

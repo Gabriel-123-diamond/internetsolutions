@@ -1,0 +1,16 @@
+{
+  "name": "Internet Solutions",
+  "short_name": "Solutions",
+  "start_url": "/portal",
+  "display": "standalone",
+  "background_color": "#ee7752",
+  "theme_color": "#f472b6",
+  "description": "Premium Captive Portal & Voucher Management",
+  "icons": [
+    {
+      "src": "/images/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

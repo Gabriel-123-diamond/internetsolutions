@@ -9,7 +9,7 @@
     --success: #34d399;         /* Emerald 400 */
     --danger: #f87171;          /* Red 400 */
     
-    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-bg: rgba(255, 255, 255, 0.05);
     --glass-border: rgba(255, 255, 255, 0.2);
     --glass-blur: blur(16px);
     
@@ -26,7 +26,7 @@
     --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
     
     /* Layout Sizes */
-    --app-max-width: 480px;
+    --sidebar-width: 280px;
     --mobile-nav-height: 70px;
     --safe-area-bottom: env(safe-area-inset-bottom);
 }
@@ -46,9 +46,6 @@ body {
     background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
     background-size: 400% 400%;
     animation: gradientBG 15s ease infinite;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     overflow-x: hidden;
 }
 
@@ -58,46 +55,40 @@ body {
     100% { background-position: 0% 50%; }
 }
 
-.app-container {
-    width: 100%;
-    max-width: var(--app-max-width);
-    height: 100vh;
-    max-height: 900px;
+/* App Layout Wrapper */
+.app-wrapper {
+    display: flex;
+    min-height: 100vh;
     background: var(--glass-bg);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    position: relative;
+}
+
+.main-content {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-    box-shadow: var(--shadow);
-}
-
-@media (min-width: 768px) {
-    .app-container {
-        border-radius: var(--radius-lg);
-        height: 85vh;
-        margin: 2rem;
-    }
-}
-
-@media (max-width: 767px) {
-    .app-container {
-        height: 100vh;
-        max-height: none;
-        border: none;
-        border-radius: 0;
-    }
+    min-width: 0; /* Prevents flex items from overflowing */
 }
 
 .scroll-area {
     flex: 1;
     overflow-y: auto;
-    padding: 1.5rem;
-    padding-bottom: calc(var(--mobile-nav-height) + 2rem);
+    padding: 2rem;
 }
 
-.scroll-area::-webkit-scrollbar {
+@media (max-width: 1024px) {
+    .scroll-area {
+        padding: 1.25rem;
+        padding-bottom: calc(var(--mobile-nav-height) + 2rem);
+    }
+}
+
+.no-scrollbar::-webkit-scrollbar {
     width: 0;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
