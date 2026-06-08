@@ -1,14 +1,17 @@
-This Serverless Function has crashed.
+1. Fix the Authentication Middleware
 
-Your connection is working correctly.
+Your portal needs a "public" landing page for unauthenticated users (like your phone). Edit app.js (or your main router file) to allow access to the login page even if there is no session.
 
-Vercel is working correctly.
+Find the code that checks for the session and modify it so it doesn't block the login route:
+JavaScript
 
-500: INTERNAL_SERVER_ERROR Code: FUNCTION_INVOCATION_FAILED ID: fra1::c5cql-1780861879298-47def3a23951
-
-    If you are a visitor, contact the website owner or try again later.
-    If you are the owner, learn how to fix the error and check the logs. 
-
-
-
-then i used the correct key on adminpassword to login, on render, it's showing please login as admin
+// Example modification in app.js
+app.get('/', (req, res) => {
+    // If the user has a session, send them to the dashboard
+    if (req.session.userId) {
+        return res.render('dashboard');
+    }
+    // If they DON'T have a session, send them to the VOUCHER LOGIN page
+    // (Don't return a 403 error here!)
+    res.render('portal-login'); 
+});
