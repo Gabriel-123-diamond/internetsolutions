@@ -2,11 +2,17 @@ const voucherService = require('../services/voucherService');
 
 class PortalController {
   async renderPortal(req, res) {
-    const { mac, ip, gw_address, gw_port } = req.query;
+    const { mac, ip, gw_address, gw_port, uamip, uamport } = req.query;
+    
     if (mac) req.session.mac = mac;
     if (ip) req.session.ip = ip;
-    if (gw_address) req.session.gw_address = gw_address;
-    if (gw_port) req.session.gw_port = gw_port;
+    
+    // Support both custom and standard CoovaChilli parameters
+    const final_gw_address = gw_address || uamip;
+    const final_gw_port = gw_port || uamport;
+    
+    if (final_gw_address) req.session.gw_address = final_gw_address;
+    if (final_gw_port) req.session.gw_port = final_gw_port;
 
     try {
       const plans = await voucherService.getAllPlans();
@@ -48,10 +54,16 @@ class PortalController {
 
       const { gw_address, gw_port } = req.session;
       if (gw_address && gw_port) {
+        console.log(`Redirecting to CoovaChilli: http://${gw_address}:${gw_port}`);
         const redirectUrl = `http://${gw_address}:${gw_port}/www/login.chi?username=${voucher.username}&password=${voucher.password}`;
         return res.redirect(redirectUrl);
       } else {
-        return res.render('payment_success', { title: 'Success', voucher });
+        console.log('No gateway info in session, showing success page');
+        return res.render('payment_success', { 
+          title: 'Success', 
+          voucher, 
+          notice: 'Voucher activated! If you are not redirected, please try to access any website.' 
+        });
       }
     } catch (err) {
       console.error(err);

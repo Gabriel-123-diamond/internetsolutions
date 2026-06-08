@@ -3,8 +3,9 @@ const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 
 const setupSecurity = (app) => {
-  // Helmet configuration
+  // Helmet configuration - Explicitly disabling HSTS and Upgrade-Insecure-Requests for HTTP testing
   app.use(helmet({
+    hsts: false, // Disable HSTS to prevent browsers from forcing HTTPS
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
@@ -13,7 +14,8 @@ const setupSecurity = (app) => {
         fontSrc: ["'self'", "cdnjs.cloudflare.com", "fonts.gstatic.com"],
         connectSrc: ["'self'", "https://api.paystack.co"],
         imgSrc: ["'self'", "data:", "https://www.google-analytics.com"],
-        frameSrc: ["'self'", "https://js.paystack.co"]
+        frameSrc: ["'self'", "https://js.paystack.co"],
+        upgradeInsecureRequests: null // Disable automatic HTTPS upgrades
       }
     }
   }));

@@ -31,6 +31,16 @@ class PaymentController {
       const data = await paymentService.verifyTransaction(reference);
       if (data.status === 'success') {
         const voucher = await voucherService.createVoucherAfterPayment(reference, data.metadata);
+        
+        // Auto-login after payment if we have the gateway info in session
+        const { gw_address, gw_port, mac } = req.session;
+        if (gw_address && gw_port) {
+          console.log(`Auto-logging in after payment: ${voucher.username}`);
+          await voucherService.activateVoucher(voucher.id, mac);
+          const redirectUrl = `http://${gw_address}:${gw_port}/www/login.chi?username=${voucher.username}&password=${voucher.password}`;
+          return res.redirect(redirectUrl);
+        }
+
         res.render('payment_success', { title: 'Payment Successful', voucher });
       } else {
         res.render('error', { title: 'Payment Failed', error: 'Payment verification failed.' });

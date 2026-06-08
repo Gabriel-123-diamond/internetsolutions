@@ -14,6 +14,6 @@ module.exports = session({
     httpOnly: true,
     sameSite: 'lax',
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    secure: process.env.NODE_ENV === 'production'
+    secure: false // Set to false to allow testing on HTTP without SSL mismatch
   }
 });

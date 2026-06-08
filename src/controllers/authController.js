@@ -57,18 +57,26 @@ class AuthController {
 
   async changePassword(req, res) {
     const { currentPassword, newPassword, confirmPassword } = req.body;
+    const redirectPath = req.session.role === 'admin' ? '/admin/settings' : '/settings';
+
     if (newPassword !== confirmPassword) {
-      return res.redirect('/settings?error=New passwords do not match');
+      return res.redirect(`${redirectPath}?error=New passwords do not match`);
     }
+
+    // Special handling for master admin (not in DB)
+    if (req.session.userId === 'admin-master') {
+      return res.redirect(`${redirectPath}?error=Master password can only be changed in the system configuration (.env)`);
+    }
+
     try {
       const success = await authService.changePassword(req.session.userId, currentPassword, newPassword);
       if (!success) {
-        return res.redirect('/settings?error=Current password is incorrect');
+        return res.redirect(`${redirectPath}?error=Current password is incorrect`);
       }
-      res.redirect('/settings?notice=Password updated successfully');
+      res.redirect(`${redirectPath}?notice=Password updated successfully`);
     } catch (err) {
       console.error(err);
-      res.redirect('/settings?error=Internal server error');
+      res.redirect(`${redirectPath}?error=Internal server error`);
     }
   }
 

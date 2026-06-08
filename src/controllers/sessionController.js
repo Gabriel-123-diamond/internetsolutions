@@ -27,7 +27,7 @@ class SessionController {
       res.status(500).json({ error: 'SSH Connection failed' });
     }).connect({
       host: process.env.ROUTER_SSH_HOST,
-      port: 22,
+      port: process.env.ROUTER_SSH_PORT || 22,
       username: process.env.ROUTER_SSH_USER || 'root',
       password: process.env.ROUTER_SSH_PASSWORD
     });
